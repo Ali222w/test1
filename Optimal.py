@@ -177,7 +177,7 @@ with col1:
 # Display the title and description in the second column
 with col2:
     if interface_language == "العربية":
-        st.title("محمد الياسين | بوت الدردشة BGC")
+        st.title("بوت دردشة BGC")
         st.write("""
         **مرحبًا!**  
         هذا بوت الدردشة الخاص بشركة غاز البصرة (BGC). يمكنك استخدام هذا البوت للحصول على معلومات حول الشركة وأنشطتها.  
@@ -187,7 +187,7 @@ with col2:
         - سيتم الرد عليك بناءً على المعلومات المتاحة.  
         """)
     else:
-        st.title("Mohammed Al-Yaseen | BGC ChatBot")
+        st.title(" BGC ChatBot")
         st.write("""
         **Welcome!**  
         This is the Basrah Gas Company (BGC) ChatBot. You can use this bot to get information about the company and its activities.  
