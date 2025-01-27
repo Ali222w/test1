@@ -121,36 +121,25 @@ with st.sidebar:
             ("system", "Context: {context}"),
         ])
 
-  # Load existing embeddings from files
-if "vectors" not in st.session_state:
-    with st.spinner("جارٍ تحميل التضميدات... الرجاء الانتظار." if interface_language == "العربية" else "Loading embeddings... Please wait."):
-        # Initialize embeddings
-        embeddings = GoogleGenerativeAIEmbeddings(
-            model="models/embedding-001"
-        )
+        # Load existing embeddings from files
+        if "vectors" not in st.session_state:
+            with st.spinner("جارٍ تحميل التضميدات... الرجاء الانتظار." if interface_language == "العربية" else "Loading embeddings... Please wait."):
+                # Initialize embeddings
+                embeddings = GoogleGenerativeAIEmbeddings(
+                    model="models/embedding-001"
+                )
 
-        # Load both embedding sources and merge them
-        try:
-            # Load main embeddings
-            main_vectors = FAISS.load_local(
-                "embeddings",
-                embeddings,
-                allow_dangerous_deserialization=True
-            )
-            
-            # Load OCR embeddings and merge
-            ocr_vectors = FAISS.load_local(
-                "embeddings(OCR)",
-                embeddings,
-                allow_dangerous_deserialization=True
-            )
-            main_vectors.merge_from(ocr_vectors)
-            
-            st.session_state.vectors = main_vectors
-            
-        except Exception as e:
-            st.error(f"حدث خطأ أثناء تحميل التضميدات: {str(e)}" if interface_language == "العربية" else f"Error loading embeddings: {str(e)}")
-            st.session_state.vectors = None
+                # Load existing FAISS index with safe deserialization
+                embeddings_path = "embeddings"  # Path to your embeddings folder
+                try:
+                    st.session_state.vectors = FAISS.load_local(
+                        embeddings_path,
+                        embeddings,
+                        allow_dangerous_deserialization=True  # Only use if you trust the source of the embeddings
+                    )
+                except Exception as e:
+                    st.error(f"حدث خطأ أثناء تحميل التضميدات: {str(e)}" if interface_language == "العربية" else f"Error loading embeddings: {str(e)}")
+                    st.session_state.vectors = None
 
         # Microphone button in the sidebar
         st.markdown("### الإدخال الصوتي" if interface_language == "العربية" else "### Voice Input")
@@ -164,16 +153,14 @@ if "vectors" not in st.session_state:
             key="mic_button",
         )
 
-       # Reset button in the sidebar
-if st.button("إعادة تعيين المحادثة" if interface_language == "العربية" else "Reset Chat"):
-    st.session_state.messages = []  # Clear chat history
-    st.session_state.memory.clear()  # Clear memory
-    st.success("تمت إعادة تعيين المحادثة بنجاح" if interface_language == "العربية" else "Chat has been reset successfully.")
-    st.rerun()  # Rerun the app to reflect changes immediately
-else:
-    st.error("API المفتاحين أدخل من فضلك." if interface_language == "العربية" else "Please enter both API keys to proceed.")
-
-
+        # Reset button in the sidebar
+        if st.button("إعادة تعيين الدردشة" if interface_language == "العربية" else "Reset Chat"):
+            st.session_state.messages = []  # Clear chat history
+            st.session_state.memory.clear()  # Clear memory
+            st.success("تمت إعادة تعيين الدردشة بنجاح." if interface_language == "العربية" else "Chat has been reset successfully.")
+            st.rerun()  # Rerun the app to reflect changes immediately
+    else:
+        st.error("الرجاء إدخال مفاتيح API للمتابعة." if interface_language == "العربية" else "Please enter both API keys to proceed.")
 
 # Initialize the PDFSearchAndDisplay class with the default PDF file
 pdf_path = "BGC.pdf"
