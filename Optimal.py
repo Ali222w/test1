@@ -129,14 +129,25 @@ with st.sidebar:
                     model="models/embedding-001"
                 )
 
-                # Load existing FAISS index with safe deserialization
-                embeddings_path = "embeddings"  # Path to your embeddings folder
-                try:
-                    st.session_state.vectors = FAISS.load_local(
-                        embeddings_path,
-                        embeddings,
-                        allow_dangerous_deserialization=True  # Only use if you trust the source of the embeddings
-                    )
+        # Load both embedding sources and merge them
+        try:
+        # Load main embeddings
+            main_vectors = FAISS.load_local(
+                "embeddings",
+                embeddings,
+                allow_dangerous_deserialization=True
+            )
+            
+        # Load OCR embeddings and merge
+            ocr_vectors = FAISS.load_local(
+                "embeddings(OCR)",
+                embeddings,
+                allow_dangerous_deserialization=True
+            )
+            main_vectors.merge_from(ocr_vectors)
+            
+            st.session_state.vectors = main_vectors
+            
                 except Exception as e:
                     st.error(f"حدث خطأ أثناء تحميل التضميدات: {str(e)}" if interface_language == "العربية" else f"Error loading embeddings: {str(e)}")
                     st.session_state.vectors = None
