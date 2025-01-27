@@ -164,14 +164,15 @@ if "vectors" not in st.session_state:
             key="mic_button",
         )
 
-        # Reset button in the sidebar
-        if st.button("إعادة تعيين الدردشة" if interface_language == "العربية" else "Reset Chat"):
-            st.session_state.messages = []  # Clear chat history
-            st.session_state.memory.clear()  # Clear memory
-            st.success("تمت إعادة تعيين الدردشة بنجاح." if interface_language == "العربية" else "Chat has been reset successfully.")
-            st.rerun()  # Rerun the app to reflect changes immediately
-    else:
-        st.error("الرجاء إدخال مفاتيح API للمتابعة." if interface_language == "العربية" else "Please enter both API keys to proceed.")
+         # Reset button in the sidebar
+        if st.button("إعادة تعيين المحادثة" if interface_language == "العربية" else "Reset Chat"):
+    st.session_state.messages = []  # Clear chat history
+    st.session_state.memory.clear()  # Clear memory
+    st.success("تمت إعادة تعيين المحادثة بنجاح" if interface_language == "العربية" else "Chat has been reset successfully.")
+    st.rerun()  # Rerun the app to reflect changes immediately
+else:
+    st.error("API المفتاحين أدخل من فضلك." if interface_language == "العربية" else "Please enter both API keys to proceed.")
+
 
 # Initialize the PDFSearchAndDisplay class with the default PDF file
 pdf_path = "BGC.pdf"
