@@ -129,17 +129,27 @@ with st.sidebar:
                     model="models/embedding-001"
                 )
 
-                # Load existing FAISS index with safe deserialization
-                embeddings_path = "embeddings"  # Path to your embeddings folder
-                try:
-                    st.session_state.vectors = FAISS.load_local(
-                        embeddings_path,
-                        embeddings,
-                        allow_dangerous_deserialization=True  # Only use if you trust the source of the embeddings
+                # Load existing FAISS indexes from both embeddings folders
+                embeddings_paths = ["embeddings", "embeddings(OCR)"]  # List of paths to your embeddings folders
+                st.session_state.vectors = None
+
+                try:    
+                    for path in embeddings_paths:
+                        # Load the FAISS index for each folder
+                    new_vectors = FAISS.load_local(
+                        path,
+                        embeddings,  # Provide the embeddings object if needed
+                        allow_dangerous_deserialization=True  # Use cautiously
                     )
+                        # Merge vectors from multiple sources if st.session_state.vectors already has data
+                        if st.session_state.vectors is None:
+                            st.session_state.vectors = new_vectors
+                        else: 
+                            st.session_state.vectors.merge_from(new_vectors)
                 except Exception as e:
                     st.error(f"حدث خطأ أثناء تحميل التضميدات: {str(e)}" if interface_language == "العربية" else f"Error loading embeddings: {str(e)}")
                     st.session_state.vectors = None
+
 
         # Microphone button in the sidebar
         st.markdown("### الإدخال الصوتي" if interface_language == "العربية" else "### Voice Input")
